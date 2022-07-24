@@ -18,7 +18,7 @@ def sub_goal_separator(sub_goal):
 
 
 data_concat = []
-subgoal = '0'
+subgoal = '1'
 for pickle_data in os.listdir(os.getcwd()+'/IGL_data'):
     if 'pick-place_mid_sg'+subgoal in pickle_data:
         with open('./IGL_data/'+ pickle_data, 'rb') as f:
