@@ -3,9 +3,9 @@ import numpy as np
 import os
 
 data_concat = []
-subgoal = '0'
+subgoal = '2'
 for pickle_data in os.listdir(os.getcwd()+'/IGL_data'):
-    if 'using_mid'+subgoal in pickle_data:
+    if 'pick-place_mid_sg'+subgoal in pickle_data:
         with open('./IGL_data/'+ pickle_data, 'rb') as f:
             data = pickle.load(f)
             data_concat.extend(data)
@@ -41,7 +41,7 @@ print(np_y.shape)
 print(np_x_imp.shape)
 print(np_y_imp.shape)
 
-np.save('./IGL_data/np_x_sg'+subgoal+'_no_imp',np_x)
-np.save('./IGL_data/np_y_sg'+subgoal+'_no_imp',np_y)
-np.save('./IGL_data/np_x_sg'+subgoal+'_imp',np_x_imp)
-np.save('./IGL_data/np_y_sg'+subgoal+'_imp',np_y_imp)
+np.save('./IGL_data/np_x_sg'+subgoal+'_no_imp_small',np_x)
+np.save('./IGL_data/np_y_sg'+subgoal+'_no_imp_small',np_y)
+np.save('./IGL_data/np_x_sg'+subgoal+'_imp_small',np_x_imp)
+np.save('./IGL_data/np_y_sg'+subgoal+'_imp_small',np_y_imp)

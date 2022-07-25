@@ -18,7 +18,7 @@ def sub_goal_separator(sub_goal):
 
 
 data_concat = []
-subgoal = '1'
+subgoal = '2'
 for pickle_data in os.listdir(os.getcwd()+'/IGL_data'):
     if 'pick-place_mid_sg'+subgoal in pickle_data:
         with open('./IGL_data/'+ pickle_data, 'rb') as f:
@@ -91,22 +91,23 @@ for i in range(len(data_concat)-1):
                                          goal=new_goal, subgoal=new_sub_goal))
 
         elif i == 0 and j != 1:
-            new_cur_robot_pos = intpol_pos(cur_robot_pos_can1, cur_robot_pos_can2, coef)
-            new_cur_obj_pos = intpol_pos(cur_obj_pos_can1, cur_obj_pos_can2, coef)
-            new_cur_obj_quat = intpol_quat(cur_obj_quat_can1, cur_obj_quat_can2, coef)
+            for coef in coefs[1:]:
+                new_cur_robot_pos = intpol_pos(cur_robot_pos_can1, cur_robot_pos_can2, coef)
+                new_cur_obj_pos = intpol_pos(cur_obj_pos_can1, cur_obj_pos_can2, coef)
+                new_cur_obj_quat = intpol_quat(cur_obj_quat_can1, cur_obj_quat_can2, coef)
 
-            new_pre_robot_pos = intpol_pos(pre_robot_pos_can1, pre_robot_pos_can2, coef)
-            new_pre_obj_pos = intpol_pos(pre_obj_pos_can1, pre_obj_pos_can2, coef)
-            new_pre_obj_quat = intpol_quat(pre_obj_quat_can1, pre_obj_quat_can2, coef)
+                new_pre_robot_pos = intpol_pos(pre_robot_pos_can1, pre_robot_pos_can2, coef)
+                new_pre_obj_pos = intpol_pos(pre_obj_pos_can1, pre_obj_pos_can2, coef)
+                new_pre_obj_quat = intpol_quat(pre_obj_quat_can1, pre_obj_quat_can2, coef)
 
-            new_goal = intpol_pos(goal_can1, goal_can2, coef)
-            new_sub_goal = np.array(len(new_goal) * [sub_goal1[0]]).reshape(-1, 1)
+                new_goal = intpol_pos(goal_can1, goal_can2, coef)
+                new_sub_goal = np.array(len(new_goal) * [sub_goal1[0]]).reshape(-1, 1)
 
-            All_traj.append(dict(obs_cur_robot_pos=new_cur_robot_pos, obs_cur_obj1_pos=new_cur_obj_pos,
-                                 obs_cur_obj1_quat=new_cur_obj_quat, \
-                                 obs_pre_robot_pos=new_pre_robot_pos, obs_pre_obj1_pos=new_pre_obj_pos,
-                                 obs_pre_obj1_quat=new_pre_obj_quat, \
-                                 goal=new_goal, subgoal=new_sub_goal))
+                All_traj.append(dict(obs_cur_robot_pos=new_cur_robot_pos, obs_cur_obj1_pos=new_cur_obj_pos,
+                                     obs_cur_obj1_quat=new_cur_obj_quat, \
+                                     obs_pre_robot_pos=new_pre_robot_pos, obs_pre_obj1_pos=new_pre_obj_pos,
+                                     obs_pre_obj1_quat=new_pre_obj_quat, \
+                                     goal=new_goal, subgoal=new_sub_goal))
 
         else:
             for coef in coefs[1:-1]:

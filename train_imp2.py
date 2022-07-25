@@ -13,25 +13,23 @@ class CustomDataSet(Dataset):
         return len(self.x)
     def __getitem__(self,idx):
         return self.x[idx], self.y[idx]
-subgoal = '1'
+subgoal = '2'
 dataset1 = CustomDataSet('np_x_sg'+subgoal+'_no_imp.npy','np_y_sg'+subgoal+'_no_imp.npy','./IGL_data/')
 dataset2 = CustomDataSet('np_x_sg'+subgoal+'_imp.npy','np_y_sg'+subgoal+'_imp.npy','./IGL_data/')
 
 grid_lr    = [0.0001, 0.00005, 0.00001]
-grid_wd    = [1e-4,1e-5,1e-6]
-grid_batch = [50,100,200]
+grid_wd    = [1e-5,1e-6,1e-7]
+grid_batch = [500,1000,2000]
 
 for x,batch in enumerate(grid_batch):
-    train_loader1 = DataLoader(dataset1, shuffle = True,batch_size = 1000)
-    train_loader2 = DataLoader(dataset2, shuffle = True,batch_size = batch)
+    train_loader1 = DataLoader(dataset1, shuffle = True,batch_size = batch)
+    train_loader2 = DataLoader(dataset2, shuffle = True,batch_size = batch//2)
 
     epochs = 100
     all_dim = 26
     device = "cuda"
     agent=IGL(all_dim,device)
     agent.to(device)
-    # print(agent)
-    # optimizer = torch.optim.Adam(agent.parameters(), lr=0.0001,weight_decay=1e-5)
     for y,lr in enumerate(grid_lr):
         for z, wd in enumerate(grid_wd):
             optimizer = torch.optim.Adam(agent.parameters(), lr=lr,weight_decay=wd)
