@@ -1,74 +1,78 @@
 import metaworld
-import random
 import numpy as np
 from metaworld.envs import (ALL_V2_ENVIRONMENTS_GOAL_OBSERVABLE,ALL_V2_ENVIRONMENTS_GOAL_HIDDEN)
-import pickle
-from Utils.utils import obs2dictobs, human_key_control , get_subgoal
+from Utils.utils import obs2dictobs, human_key_control , get_subgoal, obs2igl_state ,get_subgoal_deploy
+from Model.model import IGL
+import torch
 # print(metaworld.ML1.ENV_NAMES)  # Check out the available environments
 
-
-def get_epi(task_name):
-  task_observable_cls = ALL_V2_ENVIRONMENTS_GOAL_OBSERVABLE[task_name]
-  env = task_observable_cls()
-
-  epi_obs_cur_robot_pos, epi_obs_cur_obj1_pos, epi_obs_cur_obj1_quat, epi_obs_pre_robot_pos, epi_obs_pre_obj1_pos, epi_obs_pre_obj1_quat, epi_goal     = [], [], [], [], [], [], []
-  epi_action, epi_subgoal  = [], []
-
-  obs = env.reset()
-  dictobs = obs2dictobs(obs)
-  subgoal = get_subgoal(dictobs,np.array([0]))
-  #======================================================
-  epi_obs_cur_robot_pos.append(dictobs['obs_cur_robot_pos'])
-  epi_obs_cur_obj1_pos.append(dictobs['obs_cur_obj1_pos'])
-  epi_obs_cur_obj1_quat.append(dictobs['obs_cur_obj1_quat'])
-  epi_obs_pre_robot_pos.append(dictobs['obs_pre_robot_pos'])
-  epi_obs_pre_obj1_pos.append(dictobs['obs_pre_obj1_pos'])
-  epi_obs_pre_obj1_quat.append(dictobs['obs_pre_obj1_quat'])
-  epi_goal.append(dictobs['goal'])
-  epi_subgoal.append(subgoal)
-
-  success_count = 0
-  for i in range(2000):
-    try:
-      a = human_key_control(input())
-    except:
-      a = human_key_control(input())
-
-    obs, reward, done, info = env.step(a)  # Step the environoment with the sampled random action
-    epi_action.append(a)
-
-    dictobs = obs2dictobs(obs)
-    subgoal = get_subgoal(dictobs, subgoal)
-    epi_obs_cur_robot_pos.append(dictobs['obs_cur_robot_pos'])
-    epi_obs_cur_obj1_pos.append(dictobs['obs_cur_obj1_pos'])
-    epi_obs_cur_obj1_quat.append(dictobs['obs_cur_obj1_quat'])
-    epi_obs_pre_robot_pos.append(dictobs['obs_pre_robot_pos'])
-    epi_obs_pre_obj1_pos.append(dictobs['obs_pre_obj1_pos'])
-    epi_obs_pre_obj1_quat.append(dictobs['obs_pre_obj1_quat'])
-    epi_goal.append(dictobs['goal'])
-    epi_subgoal.append(subgoal)
-    print("=====================")
-    print(subgoal)
-    print(dictobs['obs_cur_robot_pos'][:-1] - dictobs['obs_cur_obj1_pos'],dictobs['obs_cur_robot_pos'][-1])
-    env.render()
-    if info['success']:
-      success_count += 1
-      if success_count >= 10:
-        env.close()
-        break
-  episode = dict(obs_cur_robot_pos = epi_obs_cur_robot_pos, obs_cur_obj1_pos=epi_obs_cur_obj1_pos, obs_cur_obj1_quat=epi_obs_cur_obj1_quat,\
-                 obs_pre_robot_pos = epi_obs_pre_robot_pos, obs_pre_obj1_pos=epi_obs_pre_obj1_pos, obs_pre_obj1_quat=epi_obs_pre_obj1_quat, goal=epi_goal, subgoal=epi_subgoal,action=epi_action)
-  return episode
 if __name__ == "__main__":
   # "box-close-v2-goal-observable" "drawer-open-v2-goal-observable" "drawer-close-v2-goal-observable"
   task_name = "pick-place-v2-goal-observable"
-  file_num = str(3)
-  traj_num = 0
-  total_epi = []
+  task_observable_cls = ALL_V2_ENVIRONMENTS_GOAL_OBSERVABLE[task_name]
+  env = task_observable_cls()
+
+  obs = env.reset()
+  dictobs = obs2dictobs(obs)
+  subgoal = get_subgoal_deploy(dictobs,np.array([0]))
+
+  all_dim = 26
+  device = "cpu"
+  igl0 = IGL(all_dim,device)
+  igl0.load_state_dict(torch.load('./model_save/BEST/SIGL_sg0_imp011'))
+  igl1 = IGL(all_dim, device)
+  igl1.load_state_dict(torch.load('./model_save/SIGL_sg1_imp101'))
+  igl2 = IGL(all_dim, device)
+  igl2.load_state_dict(torch.load('./model_save/SIGL_sg2_imp121'))
+
+  igl0.eval()
+  igl1.eval()
+  igl2.eval()
   while True:
-    epi = get_epi(task_name)
-    total_epi.append(epi)
-    traj_num += 1
-    print(traj_num)
-    with open('./IGL_data/data_'+task_name+'_'+file_num+'.pickle', 'wb') as f:
-      pickle.dump(total_epi, f, pickle.HIGHEST_PROTOCOL)
+    success_count = 0
+    for i in range(1200):
+      one_state = obs2igl_state(obs,subgoal)
+      print(subgoal)
+      if subgoal == 0:
+        next = igl0(torch.FloatTensor(one_state).unsqueeze(0)).squeeze(0).detach().numpy()
+      if subgoal == 1:
+        next = igl1(torch.FloatTensor(one_state).unsqueeze(0)).squeeze(0).detach().numpy()
+      if subgoal == 2:
+        next = igl2(torch.FloatTensor(one_state).unsqueeze(0)).squeeze(0).detach().numpy()
+
+      action=(next-obs[:4])*3
+      if subgoal == 2:
+        action /=3
+        action[3] -=0.1
+      action[-1] *= -1
+
+      obs,reward,done,info = env.step(action)
+      print("reward",reward)
+
+      dictobs=obs2dictobs(obs)
+
+      print(abs(dictobs['obs_cur_robot_pos'][0] - dictobs['obs_cur_obj1_pos'][0]),
+              abs(dictobs['obs_cur_robot_pos'][1] - dictobs['obs_cur_obj1_pos'][1]),
+              abs(dictobs['obs_cur_robot_pos'][2] - dictobs['obs_cur_obj1_pos'][2]))
+      print(dictobs['obs_cur_robot_pos'][3])
+      subgoal = get_subgoal_deploy(dictobs,subgoal)
+
+      env.render()
+
+      if info['success']:
+        success_count += 1
+        if success_count >= 10:
+          env.close()
+          break
+    env.close()
+    task_observable_cls = ALL_V2_ENVIRONMENTS_GOAL_OBSERVABLE[task_name]
+    env = task_observable_cls()
+
+    obs = env.reset()
+    dictobs = obs2dictobs(obs)
+    subgoal = get_subgoal_deploy(dictobs, np.array([0]))
+
+
+
+
+

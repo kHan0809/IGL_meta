@@ -15,6 +15,15 @@ def get_subgoal(dictobs,pre_sub_goal):
         return np.array([2])
     return pre_sub_goal
 
+def get_subgoal_deploy(dictobs,pre_sub_goal):
+    if abs(dictobs['obs_cur_robot_pos'][0] - dictobs['obs_cur_obj1_pos'][0]) < 0.018 and \
+       abs(dictobs['obs_cur_robot_pos'][1] - dictobs['obs_cur_obj1_pos'][1]) < 0.045 and \
+       abs(dictobs['obs_cur_robot_pos'][2] - dictobs['obs_cur_obj1_pos'][2]) < 0.053  and pre_sub_goal == 0:
+        return np.array([1])
+    if dictobs['obs_cur_robot_pos'][3]<0.8 and pre_sub_goal == 1:
+        return np.array([2])
+    return pre_sub_goal
+
 
 
 def human_key_control(key):

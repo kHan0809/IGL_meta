@@ -19,17 +19,18 @@ if __name__ == "__main__":
   all_dim = 26
   device = "cpu"
   igl0 = IGL(all_dim,device)
-  igl0.load_state_dict(torch.load('./model_save/IGL_sg0_imp211'))
+  igl0.load_state_dict(torch.load('./model_save/SIGL_sg0_imp100'))
 
   igl0.eval()
   while True:
     success_count = 0
     for i in range(1000):
       one_state = obs2igl_state(obs,subgoal)
+      print(subgoal)
       if subgoal == 0:
         next = igl0(torch.FloatTensor(one_state).unsqueeze(0)).squeeze(0).detach().numpy()
 
-      action=(next-obs[:4])*5
+      action=(next-obs[:4])*3
       action[-1] *= -1
       print("=============")
       print(obs[:4])
