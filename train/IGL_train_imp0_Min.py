@@ -1,6 +1,6 @@
 import pickle
 import torch
-from Model.model import hBC
+from Model.model import IGL
 import numpy as np
 from torch.utils.data import DataLoader, Dataset
 import torch.nn as nn
@@ -14,7 +14,7 @@ class CustomDataSet(Dataset):
     def __getitem__(self,idx):
         return self.x[idx], self.y[idx]
 subgoal = '0'
-dataset1 = CustomDataSet('hBC_x_sg' + subgoal +'.npy','hBC_y_sg' + subgoal +'.npy', '../IGL_data/')
+dataset1 = CustomDataSet('Min_x_sg' + subgoal +'.npy','Min_y_sg' + subgoal +'.npy', '../IGL_data/')
 
 grid_lr    = [0.001, 0.0005, 0.0001]
 grid_wd    = [1e-2,1e-3,1e-4]
@@ -26,7 +26,7 @@ for x,batch in enumerate(grid_batch):
     epochs = 100
     all_dim = 26
     device = "cuda"
-    agent=hBC(all_dim,device)
+    agent=IGL(all_dim,device)
     agent.to(device)
     for y,lr in enumerate(grid_lr):
         for z, wd in enumerate(grid_wd):
@@ -37,7 +37,6 @@ for x,batch in enumerate(grid_batch):
             loss = nn.MSELoss()
             for i in range(epochs):
                 temp_loss1 = 0
-                temp_loss2 = 0
                 for k,(state,label) in enumerate(train_loader1):
                     optimizer.zero_grad()
                     output=agent(state.type(torch.FloatTensor).to(device))
@@ -47,4 +46,4 @@ for x,batch in enumerate(grid_batch):
                     temp_loss1 += loss_.item()
                 print("========="+str(i)+"=========")
                 print(temp_loss1)
-            torch.save(agent.state_dict(), '../model_save/hBC'+subgoal+str(x)+str(y)+str(z))
+            torch.save(agent.state_dict(), '../model_save/Min'+subgoal+str(x)+str(y)+str(z))

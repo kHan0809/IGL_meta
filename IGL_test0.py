@@ -19,7 +19,8 @@ if __name__ == "__main__":
   all_dim = 26
   device = "cpu"
   igl0 = IGL(all_dim,device)
-  igl0.load_state_dict(torch.load('./model_save/SIGL_sg0_imp000'))
+  # igl0.load_state_dict(torch.load('./model_save/SIGL_sg0_imp000'))
+  igl0.load_state_dict(torch.load('./model_save/Min0220'))
 
   igl0.eval()
   while True:
@@ -30,7 +31,8 @@ if __name__ == "__main__":
       if subgoal == 0:
         next = igl0(torch.FloatTensor(one_state).unsqueeze(0)).squeeze(0).detach().numpy()
 
-      action=(next-obs[:4])*3
+      action=(next-obs[:4])*10
+      # action[1] *= 5
       action[-1] *= -1
       print("=============")
       print(obs[:4])
