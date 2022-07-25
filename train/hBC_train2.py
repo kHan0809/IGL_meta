@@ -1,6 +1,6 @@
 import pickle
 import torch
-from Model.model import IGL
+from Model.model import hBC
 import numpy as np
 from torch.utils.data import DataLoader, Dataset
 import torch.nn as nn
@@ -13,26 +13,21 @@ class CustomDataSet(Dataset):
         return len(self.x)
     def __getitem__(self,idx):
         return self.x[idx], self.y[idx]
-subgoal = '0'
-dataset1 = CustomDataSet('np_x_sg' + subgoal +'_no_imp_small.npy','np_y_sg' + subgoal +'_no_imp_small.npy',
-                         '../IGL_data/')
-dataset2 = CustomDataSet('np_x_sg' + subgoal +'_imp_small.npy','np_y_sg' + subgoal +'_imp_small.npy', '../IGL_data/')
+subgoal = '2'
+dataset1 = CustomDataSet('hBC_x_sg' + subgoal +'.npy','hBC_y_sg' + subgoal +'.npy', '../IGL_data/')
 
 grid_lr    = [0.001, 0.0005, 0.0001]
-grid_wd    = [1e-1,1e-2]
-grid_batch = [10000,5000]
+grid_wd    = [1e-2,1e-3,1e-4]
+grid_batch = [200,400,600]
 
 for x,batch in enumerate(grid_batch):
     train_loader1 = DataLoader(dataset1, shuffle = True,batch_size = batch)
-    train_loader2 = DataLoader(dataset2, shuffle = True,batch_size = batch//2)
 
-    epochs = 200
+    epochs = 100
     all_dim = 26
     device = "cuda"
-    agent=IGL(all_dim,device)
+    agent=hBC(all_dim,device)
     agent.to(device)
-    # print(agent)
-    # optimizer = torch.optim.Adam(agent.parameters(), lr=0.0001,weight_decay=1e-5)
     for y,lr in enumerate(grid_lr):
         for z, wd in enumerate(grid_wd):
             optimizer = torch.optim.Adam(agent.parameters(), lr=lr,weight_decay=wd)
@@ -50,15 +45,6 @@ for x,batch in enumerate(grid_batch):
                     loss_.backward()
                     optimizer.step()
                     temp_loss1 += loss_.item()
-                for j in range(2):
-                    for k, (state, label) in enumerate(train_loader2):
-                        optimizer.zero_grad()
-                        output = agent(state.type(torch.FloatTensor).to(device))
-                        loss_ = loss(label.type(torch.FloatTensor).to(device), output)
-                        loss_.backward()
-                        optimizer.step()
-                        temp_loss2 += loss_.item()
-                scheduler.step()
-                print("========",i,"========")
-                print(temp_loss1,temp_loss2)
-            torch.save(agent.state_dict(), '../model_save/SIGL_sg'+subgoal+'_imp'+str(x)+str(y)+str(z))
+                print("========="+str(i)+"=========")
+                print(temp_loss1)
+            torch.save(agent.state_dict(), '../model_save/hBC'+subgoal+str(x)+str(y)+str(z))

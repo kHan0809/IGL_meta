@@ -2,7 +2,6 @@ import pickle
 import numpy as np
 import os
 
-
 data_concat = []
 for pickle_data in os.listdir(os.getcwd()+'/'+os.pardir+'/IGL_data'):
     if 'data_total'in pickle_data:
@@ -34,7 +33,6 @@ for traj in data:
         new_y_sg.append(traj["action"][i])
 np_x_sg = np.array(new_x_sg)
 np_y_sg = np.array(new_y_sg)
-
 
 np.save('../IGL_data/GAIL_x',np_x_sg)
 np.save('../IGL_data/GAIL_y',np_y_sg)

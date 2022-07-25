@@ -2,7 +2,7 @@ import metaworld
 import numpy as np
 from metaworld.envs import (ALL_V2_ENVIRONMENTS_GOAL_OBSERVABLE,ALL_V2_ENVIRONMENTS_GOAL_HIDDEN)
 from Utils.utils import obs2dictobs, human_key_control , get_subgoal, obs2igl_state
-from Model.model import IGL
+from Model.model import hBC
 import torch
 # print(metaworld.ML1.ENV_NAMES)  # Check out the available environments
 
@@ -18,23 +18,24 @@ if __name__ == "__main__":
 
   all_dim = 26
   device = "cpu"
-  igl0 = IGL(all_dim,device)
-  igl0.load_state_dict(torch.load('./model_save/SIGL_sg0_imp000'))
+  hbc0 = hBC(all_dim,device)
+  hbc0.load_state_dict(torch.load('./model_save/hBC0220'))
+  hbc1 = hBC(all_dim,device)
+  hbc1.load_state_dict(torch.load('./model_save/hBC1220'))
 
-  igl0.eval()
+  hbc0.eval()
+  hbc1.eval()
   while True:
     success_count = 0
-    for i in range(1000):
+    for i in range(500):
       one_state = obs2igl_state(obs,subgoal)
       print(subgoal)
       if subgoal == 0:
-        next = igl0(torch.FloatTensor(one_state).unsqueeze(0)).squeeze(0).detach().numpy()
-
-      action=(next-obs[:4])*3
-      action[-1] *= -1
+        action=hbc0(torch.FloatTensor(one_state).unsqueeze(0)).squeeze(0).detach().numpy()
+      if subgoal == 1:
+        action=hbc1(torch.FloatTensor(one_state).unsqueeze(0)).squeeze(0).detach().numpy()
       print("=============")
       print(obs[:4])
-      print(next)
       print(action)
       obs,reward,done,info = env.step(action)
 
