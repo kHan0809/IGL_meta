@@ -56,3 +56,39 @@ class IGL(nn.Module):
         grip = self.net_grip(common)
         output = torch.concat((pos,grip),1)
         return output
+
+
+class hBC(nn.Module):
+    def __init__(self, all_dim, device):
+        super(hBC, self).__init__()
+        self.device = device
+        self.apply(weight_init)
+
+        self.net = nn.Sequential(
+            nn.Linear(all_dim, 512),
+            nn.ReLU(),
+            nn.Linear(512, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(),
+            nn.Linear(512, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU()
+        )
+        self.net_pos = nn.Sequential(
+        nn.Linear(256, 256),
+        nn.BatchNorm1d(256),
+        nn.ReLU(),
+        nn.Linear(256, 3)
+        )
+        self.net_grip = nn.Sequential(
+        nn.Linear(256, 1),
+        nn.Sigmoid()
+        )
+
+    def forward(self, state):
+        common = self.net(state)
+        pos = self.net_pos(common)
+        grip = self.net_grip(common)
+        output = torch.concat((pos,grip),1)
+        return output
+

@@ -4,9 +4,9 @@ import os
 
 data_concat = []
 subgoal = '0'
-for pickle_data in os.listdir(os.getcwd()+'/IGL_data'):
+for pickle_data in os.listdir(os.getcwd()+'/'+os.pardir+'/IGL_data'):
     if 'using_mid'+subgoal in pickle_data:
-        with open('./IGL_data/'+ pickle_data, 'rb') as f:
+        with open('../IGL_data/'+ pickle_data, 'rb') as f:
             data = pickle.load(f)
             data_concat.extend(data)
     else:
