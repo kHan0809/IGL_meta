@@ -57,6 +57,42 @@ class IGL(nn.Module):
         output = torch.concat((pos,grip),1)
         return output
 
+class InvKin(nn.Module):
+    def __init__(self, state_dim, device):
+        super(InvKin, self).__init__()
+        self.device = device
+        self.apply(weight_init)
+
+        self.net = nn.Sequential(
+            nn.Linear(state_dim*2, 512),
+            nn.ReLU(),
+            nn.Linear(512, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(),
+            nn.Linear(512, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU()
+        )
+        self.net_pos = nn.Sequential(
+        nn.Linear(256, 256),
+        nn.BatchNorm1d(256),
+        nn.ReLU(),
+        nn.Linear(256, 3),
+        nn.Tanh()
+        )
+        self.net_grip = nn.Sequential(
+        nn.Linear(256, 1),
+        nn.Tanh()
+        )
+
+    def forward(self, obsNnextobs_concat):
+        common = self.net(obsNnextobs_concat)
+        pos = self.net_pos(common)
+        grip = self.net_grip(common)
+        output = torch.concat((pos,grip),1)
+        return output
+
+
 
 class hBC(nn.Module):
     def __init__(self, all_dim, device):
@@ -78,11 +114,12 @@ class hBC(nn.Module):
         nn.Linear(256, 256),
         nn.BatchNorm1d(256),
         nn.ReLU(),
-        nn.Linear(256, 3)
+        nn.Linear(256, 3),
+        nn.Tanh()
         )
         self.net_grip = nn.Sequential(
         nn.Linear(256, 1),
-        nn.Sigmoid()
+        nn.Tanh()
         )
 
     def forward(self, state):

@@ -39,9 +39,7 @@ if __name__ == "__main__":
         action=hbc1(torch.FloatTensor(one_state).unsqueeze(0)).squeeze(0).detach().numpy()
       if subgoal == 2:
         action=hbc2(torch.FloatTensor(one_state).unsqueeze(0)).squeeze(0).detach().numpy()
-      print("=============")
-      print(obs[:4])
-      print(action)
+
       obs,reward,done,info = env.step(action)
 
       dictobs=obs2dictobs(obs)
