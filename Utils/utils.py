@@ -25,7 +25,20 @@ def get_subgoal(dictobs,pre_sub_goal,task_name):
 
     return pre_sub_goal
 
-# class logger()
+class logger():
+    def __init__(self,file_name,iter):
+        self.file_name = file_name
+        self.iter = iter
+        f = open("./Result/"+file_name + str(iter) + ".txt", 'w')
+        f.close
+    def write(self, result_list):
+        f = open("./Result/"+self.file_name + str(self.iter) + ".txt", 'a')
+        for re in result_list:
+            f.write(str(re))
+            f.write(" ")
+        f.write("\n")
+        f.close()
+
 
 def get_subgoal_deploy(dictobs,pre_sub_goal):
     if abs(dictobs['obs_cur_robot_pos'][0] - dictobs['obs_cur_obj1_pos'][0]) < 0.018 and \

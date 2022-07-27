@@ -21,6 +21,7 @@ if __name__ == "__main__":
   hbc = hBC(all_dim,device)
   hbc.load_state_dict(torch.load('./model_save/hBC/DrawerOpenhBC0120'))
 
+
   hbc.eval()
   while True:
     success_count = 0
