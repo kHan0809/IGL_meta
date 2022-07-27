@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
   obs = env.reset()
   dictobs = obs2dictobs(obs)
-  subgoal = get_subgoal(dictobs,np.array([0]))
+  subgoal = get_subgoal(dictobs,np.array([0]),task_name)
 
   all_dim = 26
   device = "cpu"
@@ -43,7 +43,7 @@ if __name__ == "__main__":
       obs,reward,done,info = env.step(action)
 
       dictobs=obs2dictobs(obs)
-      subgoal = get_subgoal(dictobs,subgoal)
+      subgoal = get_subgoal(dictobs,subgoal,task_name)
 
       env.render()
 
@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
     obs = env.reset()
     dictobs = obs2dictobs(obs)
-    subgoal = get_subgoal(dictobs, np.array([0]))
+    subgoal = get_subgoal(dictobs, np.array([0]),task_name)
 
 
 

@@ -20,7 +20,7 @@ if __name__ == "__main__":
   device = "cpu"
   igl0 = IGL(all_dim,device)
   # igl0.load_state_dict(torch.load('./model_save/SIGL_sg0_imp000'))
-  igl0.load_state_dict(torch.load('./model_save/DrawerOpen_Min0120'))
+  igl0.load_state_dict(torch.load('./model_save/DrawerOpen0noimp010_BEST'))
 
   igl0.eval()
 

@@ -19,19 +19,15 @@ if __name__ == "__main__":
   all_dim = 26
   device = "cpu"
   hbc = hBC(all_dim,device)
-  hbc.load_state_dict(torch.load('./model_save/DrawerOpenhBC0120'))
+  hbc.load_state_dict(torch.load('./model_save/hBC/DrawerOpenhBC0120'))
 
   hbc.eval()
   while True:
     success_count = 0
     for i in range(500):
       one_state = obs2igl_state(obs,subgoal)
-      print(subgoal)
       if subgoal == 0:
         action=hbc(torch.FloatTensor(one_state).unsqueeze(0)).squeeze(0).detach().numpy()
-      print("=============")
-      print(obs[:4])
-      print(action)
       obs,reward,done,info = env.step(action)
 
       dictobs=obs2dictobs(obs)

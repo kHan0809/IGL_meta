@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 data_concat = []
-subgoal = '0'
+subgoal = '1'
 task_name = 'data_drawer-open-v2-goal-observable'
 for pickle_data in os.listdir(os.getcwd()+'/'+os.pardir+'/IGL_data'):
     if task_name+'_using_mid_'+subgoal in pickle_data:

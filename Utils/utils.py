@@ -25,6 +25,8 @@ def get_subgoal(dictobs,pre_sub_goal,task_name):
 
     return pre_sub_goal
 
+# class logger()
+
 def get_subgoal_deploy(dictobs,pre_sub_goal):
     if abs(dictobs['obs_cur_robot_pos'][0] - dictobs['obs_cur_obj1_pos'][0]) < 0.018 and \
        abs(dictobs['obs_cur_robot_pos'][1] - dictobs['obs_cur_obj1_pos'][1]) < 0.045 and \

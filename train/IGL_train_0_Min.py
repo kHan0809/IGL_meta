@@ -1,6 +1,6 @@
 import pickle
 import torch
-from Model.model import hBC
+from Model.model import IGL
 import numpy as np
 from torch.utils.data import DataLoader, Dataset
 import torch.nn as nn
@@ -13,21 +13,24 @@ class CustomDataSet(Dataset):
         return len(self.x)
     def __getitem__(self,idx):
         return self.x[idx], self.y[idx]
-subgoal = '2'
-dataset1 = CustomDataSet('hBC_x_sg' + subgoal +'.npy','hBC_y_sg' + subgoal +'.npy', '../IGL_data/')
-
+subgoal = '1'
+task_name = 'DrawerOpen_Min'
+dataset1 = CustomDataSet(task_name+'_x_sg' + subgoal +'.npy',task_name+'_y_sg' + subgoal +'.npy','../IGL_data/')
+print(len(dataset1))
 grid_lr    = [0.001, 0.0005, 0.0001]
-grid_wd    = [1e-2,1e-3,1e-4]
-grid_batch = [200,400,600]
+grid_wd    = [1e-4,1e-5]
+grid_batch = [3000,1500]
 
 for x,batch in enumerate(grid_batch):
     train_loader1 = DataLoader(dataset1, shuffle = True,batch_size = batch)
 
-    epochs = 100
+    epochs = 200
     all_dim = 26
     device = "cuda"
-    agent=hBC(all_dim,device)
+    agent=IGL(all_dim,device)
     agent.to(device)
+    # print(agent)
+    # optimizer = torch.optim.Adam(agent.parameters(), lr=0.0001,weight_decay=1e-5)
     for y,lr in enumerate(grid_lr):
         for z, wd in enumerate(grid_wd):
             optimizer = torch.optim.Adam(agent.parameters(), lr=lr,weight_decay=wd)
@@ -45,6 +48,6 @@ for x,batch in enumerate(grid_batch):
                     loss_.backward()
                     optimizer.step()
                     temp_loss1 += loss_.item()
-                print("========="+str(i)+"=========")
-                print(temp_loss1)
-            torch.save(agent.state_dict(), '../model_save/hBC'+subgoal+str(x)+str(y)+str(z))
+                print("========",i,"========")
+                print(temp_loss1,temp_loss2)
+            torch.save(agent.state_dict(), '../model_save/'+task_name+subgoal+str(x)+str(y)+str(z))

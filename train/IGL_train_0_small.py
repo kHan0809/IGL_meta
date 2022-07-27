@@ -13,7 +13,7 @@ class CustomDataSet(Dataset):
         return len(self.x)
     def __getitem__(self,idx):
         return self.x[idx], self.y[idx]
-subgoal = '0'
+subgoal = '1'
 task_name = 'DrawerOpen'
 dataset1 = CustomDataSet(task_name+'_x_sg' + subgoal +'_small.npy',task_name+'_y_sg' + subgoal +'_small.npy','../IGL_data/')
 print(len(dataset1))

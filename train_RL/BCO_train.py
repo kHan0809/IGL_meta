@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
             if info['success']:
               eval_success_count += 1
-              if success_count >= 5:
+              if eval_success_count >= 5:
                 eval_success = True
                 break
 
