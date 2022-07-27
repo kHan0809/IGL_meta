@@ -19,10 +19,9 @@ def sub_goal_separator(sub_goal):
 
 data_concat = []
 subgoal = '2'
-for pickle_data in os.listdir(os.getcwd()+'/IGL_data'):
-    if 'pick-place_mid_sg'+subgoal in pickle_data: #pick-place_mid_sg
-
-        with open('./IGL_data/'+ pickle_data, 'rb') as f:
+for pickle_data in os.listdir(os.getcwd()+'/'+os.pardir+'/IGL_data'):
+    if 'data_drawer-open-v2-goal-observablesg1' in pickle_data: #pick-place_mid_sg
+        with open('../IGL_data/'+ pickle_data, 'rb') as f:
             data = pickle.load(f)
             data_concat.extend(data)
     else:
@@ -37,7 +36,7 @@ import matplotlib.pyplot as plt
 fig = plt.figure(figsize=(10, 7))
 ax = plt.axes(projection="3d")
 
-for i in range(10):
+for i in range(15):
     #===================
     cur_robot_pos1 = np.array(data_concat[i]['obs_cur_robot_pos'])
     cur_obj_pos1 = np.array(data_concat[i]['obs_cur_obj1_pos'])

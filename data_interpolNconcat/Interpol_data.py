@@ -10,17 +10,17 @@ def sub_goal_separator(sub_goal):
         if sub_goal[idx] != sub_goal[idx+1]:
             count += 1
             idx_list.append(idx)
-            if count == 2:
+            if count == 1:
                 break
         else:
             pass
     return idx_list
 
-
 data_concat = []
-for pickle_data in os.listdir(os.getcwd()+'/IGL_data'):
-    if 'data_total' in pickle_data:
-        with open('./IGL_data/'+ pickle_data, 'rb') as f:
+task_name = 'data_drawer-open-v2-goal-observable'
+for pickle_data in os.listdir(os.getcwd()+'/'+os.pardir+'/IGL_data'):
+    if task_name+'_0' in pickle_data: #pick-place_mid_sg
+        with open('../IGL_data/'+ pickle_data, 'rb') as f:
             data = pickle.load(f)
             data_concat.extend(data)
     else:
@@ -29,7 +29,6 @@ for pickle_data in os.listdir(os.getcwd()+'/IGL_data'):
 traj_sg0 = []
 traj_sg1 = []
 traj_sg2 = []
-print(len(data_concat))
 coefs = np.linspace(0,1,3,endpoint=True)
 for i in range(len(data_concat)-1):
     for j in range(i+1,len(data_concat)):
@@ -198,10 +197,10 @@ print(len(traj_sg0))
 print(len(traj_sg1))
 print(len(traj_sg2))
 
-with open('../IGL_data/pick-place_mid_sg0.pickle', 'wb') as f:
+with open('../IGL_data/'+task_name+'sg0.pickle', 'wb') as f:
     pickle.dump(traj_sg0, f, pickle.HIGHEST_PROTOCOL)
-with open('../IGL_data/pick-place_mid_sg1.pickle', 'wb') as f:
+with open('../IGL_data/'+task_name+'sg1.pickle', 'wb') as f:
     pickle.dump(traj_sg1, f, pickle.HIGHEST_PROTOCOL)
-with open('../IGL_data/pick-place_mid_sg2.pickle', 'wb') as f:
-    pickle.dump(traj_sg2, f, pickle.HIGHEST_PROTOCOL)
+# with open('../IGL_data/'+task_name+'sg0.pickle', 'wb') as f:
+#     pickle.dump(traj_sg2, f, pickle.HIGHEST_PROTOCOL)
 

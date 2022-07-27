@@ -14,19 +14,19 @@ class CustomDataSet(Dataset):
     def __getitem__(self,idx):
         return self.x[idx], self.y[idx]
 subgoal = '0'
-dataset1 = CustomDataSet('np_x_sg' + subgoal +'_no_imp_small.npy','np_y_sg' + subgoal +'_no_imp_small.npy',
-                         '../IGL_data/')
-dataset2 = CustomDataSet('np_x_sg' + subgoal +'_imp_small.npy','np_y_sg' + subgoal +'_imp_small.npy', '../IGL_data/')
+task_name = 'DrawerOpen'
+dataset1 = CustomDataSet(task_name+'_x_sg' + subgoal +'_no_imp_small.npy',task_name+'_y_sg' + subgoal +'_no_imp_small.npy','../IGL_data/')
+dataset2 = CustomDataSet(task_name+'_x_sg' + subgoal +'_imp_small.npy'   ,task_name+'_y_sg' + subgoal +'_imp_small.npy','../IGL_data/')
 
 grid_lr    = [0.001, 0.0005, 0.0001]
-grid_wd    = [1e-1,1e-2]
-grid_batch = [10000,5000]
+grid_wd    = [1e-4,1e-5]
+grid_batch = [499,199]
 
 for x,batch in enumerate(grid_batch):
     train_loader1 = DataLoader(dataset1, shuffle = True,batch_size = batch)
-    train_loader2 = DataLoader(dataset2, shuffle = True,batch_size = batch//2)
+    train_loader2 = DataLoader(dataset2, shuffle = True,batch_size = batch//5)
 
-    epochs = 200
+    epochs = 80
     all_dim = 26
     device = "cuda"
     agent=IGL(all_dim,device)
@@ -61,4 +61,4 @@ for x,batch in enumerate(grid_batch):
                 scheduler.step()
                 print("========",i,"========")
                 print(temp_loss1,temp_loss2)
-            torch.save(agent.state_dict(), '../model_save/SIGL_sg'+subgoal+'_imp'+str(x)+str(y)+str(z))
+            torch.save(agent.state_dict(), '../model_save/'+task_name+subgoal+'imp'+str(x)+str(y)+str(z))

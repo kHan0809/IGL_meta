@@ -3,9 +3,10 @@ import numpy as np
 import os
 
 data_concat = []
-subgoal = '2'
+subgoal = '1'
+task_name = 'data_drawer-open-v2-goal-observable'
 for pickle_data in os.listdir(os.getcwd()+'/'+os.pardir+'/IGL_data'):
-    if 'pick-place_mid_sg'+subgoal in pickle_data:
+    if task_name+'_using_mid_'+subgoal in pickle_data:
         with open('../IGL_data/'+ pickle_data, 'rb') as f:
             data = pickle.load(f)
             data_concat.extend(data)
@@ -41,7 +42,7 @@ print(np_y.shape)
 print(np_x_imp.shape)
 print(np_y_imp.shape)
 
-np.save('./IGL_data/np_x_sg'+subgoal+'_no_imp_small',np_x)
-np.save('./IGL_data/np_y_sg'+subgoal+'_no_imp_small',np_y)
-np.save('./IGL_data/np_x_sg'+subgoal+'_imp_small',np_x_imp)
-np.save('./IGL_data/np_y_sg'+subgoal+'_imp_small',np_y_imp)
+np.save('../IGL_data/DrawerOpen_x_sg'+subgoal+'_no_imp_small',np_x)
+np.save('../IGL_data/DrawerOpen_y_sg'+subgoal+'_no_imp_small',np_y)
+np.save('../IGL_data/DrawerOpen_x_sg'+subgoal+'_imp_small',np_x_imp)
+np.save('../IGL_data/DrawerOpen_y_sg'+subgoal+'_imp_small',np_y_imp)

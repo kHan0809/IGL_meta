@@ -14,16 +14,17 @@ class CustomDataSet(Dataset):
     def __getitem__(self,idx):
         return self.x[idx], self.y[idx]
 subgoal = '0'
-dataset1 = CustomDataSet('Min_x_sg' + subgoal +'.npy','Min_y_sg' + subgoal +'.npy', '../IGL_data/')
+task_name = 'DrawerOpen_Min'
+dataset1 = CustomDataSet(task_name+'_x_sg' + subgoal + '.npy',task_name+'_y_sg' + subgoal +'.npy','../IGL_data/')
 
 grid_lr    = [0.001, 0.0005, 0.0001]
-grid_wd    = [1e-2,1e-3,1e-4]
-grid_batch = [200,400,600]
+grid_wd    = [1e-4,1e-5]
+grid_batch = [101,51]
 
 for x,batch in enumerate(grid_batch):
     train_loader1 = DataLoader(dataset1, shuffle = True,batch_size = batch)
 
-    epochs = 100
+    epochs = 30
     all_dim = 26
     device = "cuda"
     agent=IGL(all_dim,device)
@@ -46,4 +47,4 @@ for x,batch in enumerate(grid_batch):
                     temp_loss1 += loss_.item()
                 print("========="+str(i)+"=========")
                 print(temp_loss1)
-            torch.save(agent.state_dict(), '../model_save/Min'+subgoal+str(x)+str(y)+str(z))
+            torch.save(agent.state_dict(), '../model_save/'+task_name+subgoal+str(x)+str(y)+str(z))

@@ -10,7 +10,7 @@ def sub_goal_separator(sub_goal):
         if sub_goal[idx] != sub_goal[idx+1]:
             count += 1
             idx_list.append(idx)
-            if count == 2:
+            if count == 1:
                 break
         else:
             pass
@@ -18,10 +18,11 @@ def sub_goal_separator(sub_goal):
 
 
 data_concat = []
-subgoal = '2'
-for pickle_data in os.listdir(os.getcwd()+'/IGL_data'):
-    if 'pick-place_mid_sg'+subgoal in pickle_data:
-        with open('./IGL_data/'+ pickle_data, 'rb') as f:
+subgoal = '1'
+task_name = 'data_drawer-open-v2-goal-observable'
+for pickle_data in os.listdir(os.getcwd()+'/'+os.pardir+'/IGL_data'):
+    if task_name+'sg'+subgoal in pickle_data:
+        with open('../IGL_data/' + pickle_data, 'rb') as f:
             data = pickle.load(f)
             data_concat.extend(data)
     else:
@@ -128,6 +129,6 @@ for i in range(len(data_concat)-1):
 
 
 print(len(All_traj))
-with open('./IGL_data/using_mid'+subgoal+'.pickle', 'wb') as f:
+with open('../IGL_data/'+task_name+'_using_mid_'+subgoal+'.pickle', 'wb') as f:
     pickle.dump(All_traj, f, pickle.HIGHEST_PROTOCOL)
 

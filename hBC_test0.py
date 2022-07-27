@@ -8,18 +8,18 @@ import torch
 
 if __name__ == "__main__":
   # "box-close-v2-goal-observable" "drawer-open-v2-goal-observable" "drawer-close-v2-goal-observable"
-  task_name = "pick-place-v2-goal-observable"
+  task_name = "drawer-open-v2-goal-observable"
   task_observable_cls = ALL_V2_ENVIRONMENTS_GOAL_OBSERVABLE[task_name]
   env = task_observable_cls()
 
   obs = env.reset()
   dictobs = obs2dictobs(obs)
-  subgoal = get_subgoal(dictobs,np.array([0]))
+  subgoal = get_subgoal(dictobs,np.array([0]),task_name)
 
   all_dim = 26
   device = "cpu"
   hbc = hBC(all_dim,device)
-  hbc.load_state_dict(torch.load('./model_save/hBC0220'))
+  hbc.load_state_dict(torch.load('./model_save/DrawerOpenhBC0120'))
 
   hbc.eval()
   while True:
@@ -35,7 +35,7 @@ if __name__ == "__main__":
       obs,reward,done,info = env.step(action)
 
       dictobs=obs2dictobs(obs)
-      subgoal = get_subgoal(dictobs,subgoal)
+      subgoal = get_subgoal(dictobs,subgoal,task_name)
 
       env.render()
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     obs = env.reset()
     dictobs = obs2dictobs(obs)
-    subgoal = get_subgoal(dictobs, np.array([0]))
+    subgoal = get_subgoal(dictobs, np.array([0]),task_name)
 
 
 

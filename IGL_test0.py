@@ -8,47 +8,42 @@ import torch
 
 if __name__ == "__main__":
   # "box-close-v2-goal-observable" "drawer-open-v2-goal-observable" "drawer-close-v2-goal-observable"
-  task_name = "pick-place-v2-goal-observable"
+  task_name = "drawer-open-v2-goal-observable"
   task_observable_cls = ALL_V2_ENVIRONMENTS_GOAL_OBSERVABLE[task_name]
   env = task_observable_cls()
 
   obs = env.reset()
   dictobs = obs2dictobs(obs)
-  subgoal = get_subgoal(dictobs,np.array([0]))
+  subgoal = get_subgoal(dictobs,np.array([0]),task_name)
 
   all_dim = 26
   device = "cpu"
   igl0 = IGL(all_dim,device)
   # igl0.load_state_dict(torch.load('./model_save/SIGL_sg0_imp000'))
-  igl0.load_state_dict(torch.load('./model_save/Min0222'))
-  inv = InvKin(4,device)
-  inv.load_state_dict(torch.load('./model_save/InvKin222'))
+  igl0.load_state_dict(torch.load('./model_save/DrawerOpen_Min0120'))
 
   igl0.eval()
-  inv.eval()
+
   while True:
     success_count = 0
-    for i in range(1000):
+    for i in range(500):
       one_state = obs2igl_state(obs,subgoal)
       print(subgoal)
       if subgoal == 0:
-        next_ = igl0(torch.FloatTensor(one_state).unsqueeze(0))
+        next = igl0(torch.FloatTensor(one_state).unsqueeze(0)).squeeze(0).detach().numpy()
 
-      action = inv(torch.cat((torch.FloatTensor(obs[:4]).unsqueeze(0),next_),1)).squeeze(0).detach().numpy()
-
-
+      action=(next-obs[:4])*30
 
 
       # action[1] *= 5
-      # action[-1] *= -1
+      action[-1] *= -1
       print("=============")
       print(obs[:4])
-      print(next_)
       print(action)
       obs,reward,done,info = env.step(action)
 
       dictobs=obs2dictobs(obs)
-      subgoal = get_subgoal(dictobs,subgoal)
+      subgoal = get_subgoal(dictobs,subgoal,task_name)
 
       env.render()
 
@@ -63,7 +58,7 @@ if __name__ == "__main__":
 
     obs = env.reset()
     dictobs = obs2dictobs(obs)
-    subgoal = get_subgoal(dictobs, np.array([0]))
+    subgoal = get_subgoal(dictobs, np.array([0]),task_name)
 
 
 
